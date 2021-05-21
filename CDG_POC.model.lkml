@@ -22,3 +22,15 @@ explore: g2_order_messages_reporting {}
 #     sql_on: ${users.id} = ${orders.user_id} ;;
 #   }
 # }
+explore: dimension_table {
+  join: message_table {
+    type: inner
+    sql_on: ${dimension_table.sla_order_id}=${message_table.sla_order_id} ;;
+    relationship: one_to_many
+  }
+  join: message_table2 {
+    type: full_outer
+    sql_on: ${dimension_table.sla_order_id}=${message_table2.sla_order_id} ;;
+    relationship: one_to_many
+  }
+}

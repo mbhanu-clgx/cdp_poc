@@ -67,7 +67,7 @@ view: message_table {
   }
   measure: sla_datediff {
     type: number
-    sql: DATE_DIFF(cast(${sla_month_date1} as timestamp),cast(${message_table2.sla_month_date1}as timestamp),millisecond);;
+    sql: DATE_DIFF(cast(${message_table2.sla_month_date1} as timestamp),cast(${sla_month_date1}as timestamp),millisecond);;
   }
 
 

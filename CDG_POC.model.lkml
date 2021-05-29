@@ -11,6 +11,25 @@ explore: g2_order_reporting {
   sql_always_where: ${consumer_partner_id} in ('FANNIEMAE','FANNIEMAEV2') ;;
 }
 
+explore: FNMA_SLA_DAY {}
+
+explore: FNMA_SLA_Monthly {}
+
+
+explore: message_tables {
+  join: dimension_table {
+    type: inner
+    sql_on: ${dimension_table.sla_order_id}=${message_tables.sla_order_id2} ;;
+    relationship: one_to_many
+  }
+}
+explore: test {
+  join: dimension_table {
+    type: inner
+    sql_on: ${dimension_table.sla_order_id}= ${test.sla_order_id2} ;;
+    relationship: one_to_many
+  }
+}
 explore: g2_order_messages_reporting {}
 #   join: orders {
 #     relationship: many_to_one
@@ -32,5 +51,18 @@ explore: dimension_table {
     type: full_outer
     sql_on: ${dimension_table.sla_order_id}=${message_table2.sla_order_id} ;;
     relationship: one_to_many
+  }
+
+}
+explore: message_table{
+  join: message_table2 {
+    type: full_outer
+    sql_on:  ${message_table.sla_order_id}=${message_table2.sla_order_id} ;;
+    relationship: many_to_many
+  }
+  join: dimension_table {
+    type: inner
+    sql_on: ${dimension_table.sla_order_id}=${message_table.sla_order_id} ;;
+    relationship: many_to_one
   }
 }

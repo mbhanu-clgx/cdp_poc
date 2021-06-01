@@ -77,7 +77,7 @@ view: FNMA_SLA_Monthly {
 
           select
 FORMAT_DATE("%b %Y", Created_DateTB01 ) as SLA_Month ,
-       --   MIN(Created_DateTB01 ) as SLA_Days_Date ,
+         MIN(Created_DateTB01 ) as SLA_Days_Date ,
           SUM( casefunction )/SUM(orderidcount)  as Avg_Resp_Time,
           SUM( Ttl_Request_Messages) AS Total_Request_Messages,
          ( SUM(Within2000ms)/SUM( Ttl_Request_Messages))*100 AS Within2000ms,
@@ -213,10 +213,14 @@ FORMAT_DATE("%b %Y", Created_DateTB01 ) as SLA_Month ,
 
   dimension: SLA_Month {
     label: "FNMA SLA MONTH"
-
     sql: ${TABLE}.SLA_Month ;;
+    description: "used as filter for month"
   }
 
+  dimension_group: sla_days_date {
+    type: time
+    sql: ${TABLE}.SLA_Days_Date ;;
+  }
     measure: Total_Request_Messages {
       type: number
       sql: SUM(${TABLE}.Total_Request_Messages) ;;

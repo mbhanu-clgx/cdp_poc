@@ -156,7 +156,7 @@ dimension_group: SLA_Days_Date {
   dimension: SLA_Date {
     label: "FNMA SLA Date Dim"
     type: date
-    sql: ${TABLE}.SLA_Date ;;
+    sql: cast(${TABLE}.SLA_Date as timestamp) ;;
   }
 
   # measure: vSLAStartDate {

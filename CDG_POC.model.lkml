@@ -1,7 +1,7 @@
 connection: "cdg_gcp_bigquery_poc"
 
 include: "/views/*.view.lkml"                # include all views in the views/ folder in this project
-# include: "/**/*.view.lkml"                 # include all views in this project
+ include: "/**/*.view.lkml"                 # include all views in this project
 # include: "my_dashboard.dashboard.lookml"   # include a LookML dashboard called my_dashboard
 
 # # Select the views that should be a part of this model,
@@ -34,3 +34,14 @@ explore: dimension_table {
     relationship: one_to_many
   }
 }
+
+
+ explore: CDGDashboard_Dimension_Table {
+
+  join : CDGDashboard_Order_MaxDate {
+    type: full_outer
+    sql_on: ${CDGDashboard_Dimension_Table.orderId}=${CDGDashboard_Order_MaxDate.order_Id} ;;
+    relationship: one_to_many
+  }
+
+ }

@@ -48,7 +48,10 @@ view: message_table2 {
     type: time
     sql: ${TABLE}.Created_DateTB02 ;;
   }
-
+measure: order_id_count {
+  type: number
+  sql: count(${sla_order_id}) ;;
+}
 
 measure: sla_month_date1 {
   label: "SLA Month Datetime"

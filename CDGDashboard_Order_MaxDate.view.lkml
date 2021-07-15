@@ -103,9 +103,9 @@ AND T.Order_Upd_DT = U.orderUpdatedDate
     sql: ${TABLE}.Order_Update_DT ;;
   }
 
-  measure: OrderId_Count {
-    type: number
-    sql: COUNT(${TABLE}.order_Id) ;;
+  measure: Order_Total {
+    type: count_distinct
+    sql: ${TABLE}.order_Id ;;
   }
 
   measure: Month_Date_Count {

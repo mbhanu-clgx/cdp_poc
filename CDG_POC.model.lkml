@@ -20,6 +20,10 @@ explore: FNMA_SLA_DAY {}
 
 explore: FNMA_SLA_Monthly {}
 
+explore: WF_SLA_DAY {}
+
+explore: WF_SLA_Monthly {}
+
 
 explore: message_tables {
   join: dimension_table {

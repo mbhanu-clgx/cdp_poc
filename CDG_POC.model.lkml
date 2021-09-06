@@ -24,7 +24,7 @@ explore: WF_SLA_DAY {}
 
 explore: WF_SLA_Monthly {}
 
-explore: wf_order_volume_summary {}
+explore: WF_Order_Volume_Summary {}
 
 #explore : WF_Order_Volume_Summary_Monthly {}
 

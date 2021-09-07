@@ -1,4 +1,4 @@
-view: Wf_Order_Volume_Summary_old {
+view: Wf_Order_Volume_Summary {
 
   derived_table: {
     sql:

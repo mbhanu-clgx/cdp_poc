@@ -24,10 +24,9 @@ explore: WF_SLA_DAY {}
 
 explore: WF_SLA_Monthly {}
 
-
 explore: wf_order_volume_summary {}
 
-#explore : WF_Order_Volume_Summary_Monthly {}
+explore : FNMA_SLA_Month_End_Report {}
 
 explore: message_tables {
   join: dimension_table {

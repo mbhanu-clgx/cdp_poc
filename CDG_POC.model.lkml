@@ -28,6 +28,12 @@ explore: wf_order_volume_summary {}
 
 explore : FNMA_SLA_Month_End_Report {}
 
+explore: cdg_tax_live {}
+
+explore: cdg_tax_live_Daily {}
+explore: cdg_tax_live_detail_reports {}
+
+
 explore: message_tables {
   join: dimension_table {
     type: inner

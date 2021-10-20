@@ -33,6 +33,11 @@ explore: cdg_tax_live {}
 explore: cdg_tax_live_Daily {}
 explore: cdg_tax_live_detail_reports {}
 
+explore: cdg_tax_pte_push_order_details {}
+
+explore: CDG_TAX_PTE_PUSH_Daily {}
+explore: CDG_TAX_PTE_PUSH_Monthly {}
+
 
 explore: message_tables {
   join: dimension_table {

@@ -38,6 +38,7 @@ explore: cdg_tax_pte_push_order_details {}
 explore: CDG_TAX_PTE_PUSH_Daily {}
 explore: CDG_TAX_PTE_PUSH_Monthly {}
 
+explore: cdg_product_reports {}
 
 explore: message_tables {
   join: dimension_table {

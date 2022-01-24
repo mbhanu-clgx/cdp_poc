@@ -1,26 +1,26 @@
 view: message_table {
   derived_table: {
-    sql: select distinct
-     orderId as SLA_orderId,
-     source as Source1,
-     requestAction as RA1,
-     serviceType as ST1,
-     messageForm as MF1,
+        sql: select distinct
+    orderId as SLA_orderId,
+    source as Source1,
+    requestAction as RA1,
+    serviceType as ST1,
+    messageForm as MF1,
     -- 'Count_id' as Count_Id ,
-     min(orderCreationDate)as SLA_Month_Date
+    min(orderCreationDate)as SLA_Month_Date
     -- min(orderCreationDate) as Created_DateTB1
     -- ,
     -- filename() as Fname
 
       FROM looker_lookup.G2OrderMessagesReporting
-   where  requestAction= 'Reissue'
-   and source = 'CONSUMER'
-   Group by orderId ,
-     source ,
-     requestAction ,
-     serviceType ,
-     messageForm
- ;;
+  where  requestAction= 'Reissue'
+  and source = 'CONSUMER'
+  Group by orderId ,
+    source ,
+    requestAction ,
+    serviceType ,
+    messageForm
+;;
   }
   dimension: sla_order_id {
     primary_key: yes
@@ -74,9 +74,9 @@ view: message_table {
 
   ########## Variables
  measure: vSLAStartDate {
-  hidden: yes
-   type: string
-  sql: extract(month from date_sub(max(${TABLE}.SLA_Month_Date),INTERVAL 30 DAY))||'/'||extract(day from date_sub(max(${TABLE}.SLA_Month_Date),INTERVAL 30 DAY))||'/'||extract(year from date_sub(max(${TABLE}.SLA_Month_Date),INTERVAL 30 DAY)) ;;
+  # hidden: yes
+   type: number
+  sql: date_sub(max(${TABLE}.SLA_Month_Date),INTERVAL 30 DAY) ;;
  }
   dimension: vToday{
     hidden: yes
@@ -101,8 +101,8 @@ view: message_table {
   }
 
   dimension:vtoday_dateformat  {
-    type: date_time
-    sql: current_timestamp ;;
+    type: date
+    sql: current_date ;;
   }
 
 measure: vsla_month_dateformat {
@@ -110,15 +110,21 @@ measure: vsla_month_dateformat {
   sql: DATE_TRUNC(date_add(${slamonthdate_max},INTERVAL -23 MONTH),MONTH) ;;
 }
 
+
   measure: response_time {
     type: number
-    sql: case when ${last_updated_date}>=${vslastart_dateformat} and ${last_updated_date}<cast(${vtoday_dateformat} as date) then
-    1 end;;
+    sql: case when cast(MIN(${TABLE}.SLA_Month_Date) as date)>= cast(${vSLAStartDate} as date) and cast(MIN(${TABLE}.SLA_Month_Date)as date) < cast(${vtoday_dateformat} as date) then ${sla_datediff} else Null end ;;
   }
-  measure: response_time_sum {
-    type: number
-    sql: case when ${response_time} =1 then sum(${response_time}) end ;;
-  }
+ measure: order_id_count {
+   type: number
+  sql: count(${sla_order_id}) ;;
+ }
+measure: response_time_sum {
+  type: number
+  sql: sum(${response_time}) ;;
+}
+  # sum(if((${message_table.sla_datediff})<= 2000,1,0))
+  # /count(if(${message_table.last_updated_date}>= ${message_table.vslastart_dateformat} AND ${message_table.last_updated_date} <${message_table.vtoday_dateformat},${order_id_count},0 ))
   # CASE WHEN SLA_Month_Date >= vSLAStartDate AND < vToday THEN
   # SUM ( TIME ( Created_DateTB02-Created_DateTB1)) * 86400000 /count(SLA_orderId)
  ######testing

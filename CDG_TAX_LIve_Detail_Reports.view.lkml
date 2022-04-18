@@ -311,14 +311,14 @@ Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
 
     dimension: Created_DateTB1 {
     label: "Created Date"
-    type: date
+    type: date_time
     sql: ${TABLE}.Created_DateTB1 ;;
     convert_tz: no
   }
 
   dimension: Created_DateTB02 {
     label: "Fulfillment Date"
-    type: date
+    type: date_time
     sql: ${TABLE}.Created_DateTB02 ;;
     convert_tz: no
   }

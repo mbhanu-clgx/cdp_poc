@@ -313,26 +313,28 @@ Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
       type: time
       timeframes: [millisecond4]
       sql: ${TABLE}.Created_DateTB1 ;;
+      convert_tz: yes
     }
 
     dimension: Created_DateTB1 {
     label: "Created Date"
     type: date_time
     sql: ${TABLE}.Created_DateTB1 ;;
-    convert_tz: no
+    convert_tz: yes
   }
 
   dimension_group: fulfillment_date {
     type: time
     timeframes: [millisecond4]
     sql: ${TABLE}.Created_DateTB02 ;;
+    convert_tz: yes
   }
 
   dimension: Created_DateTB02 {
     label: "Fulfillment Date"
     type: date_time
     sql: ${TABLE}.Created_DateTB02 ;;
-    convert_tz: no
+    convert_tz: yes
   }
 
   dimension: orderStatus {

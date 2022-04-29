@@ -309,21 +309,11 @@ Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
     sql: ${TABLE}.SLA_LoanNumber ;;
   }
 
-  # dimension_group: created_date_test {
-  #   type: time
-  #   timeframes: [millisecond4]
-  #   sql: ${TABLE}.Created_DateTB1 ;;
-  #   # sql: datetime(${TABLE}.Created_DateTB1, "America/Los_Angeles") ;;
-  #   # sql: convert_tz(${TABLE}.Created_DateTB1,'America/Phoenix','America/Los_Angeles') ;;
-  #   convert_tz: no
-  # }
-
-    dimension_group: created_date {
+     dimension_group: created_date {
       type: time
       timeframes: [millisecond4]
       # sql: ${TABLE}.Created_DateTB1 ;;
       sql: datetime(${TABLE}.Created_DateTB1, "America/Los_Angeles") ;;
-      # sql: convert_tz(${TABLE}.Created_DateTB1,'America/Phoenix','America/Los_Angeles') ;;
       convert_tz: yes
     }
 
@@ -337,6 +327,7 @@ Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
   dimension_group: fulfillment_date {
     type: time
     timeframes: [millisecond4]
+    # sql:${TABLE}.Created_DateTB02  ;;
     sql: datetime(${TABLE}.Created_DateTB02, "America/Los_Angeles") ;;
     convert_tz: yes
   }

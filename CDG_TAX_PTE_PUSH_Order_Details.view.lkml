@@ -356,11 +356,27 @@ Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
     sql: ${TABLE}.SLA_LoanNumber ;;
   }
 
+  dimension_group: created_date {
+    type: time
+    timeframes: [millisecond4]
+    # sql: ${TABLE}.Created_DateTB1 ;;
+    sql: datetime(cast(${TABLE}.Created_DateTB1 as timestamp), "America/Los_Angeles") ;;
+    convert_tz: yes
+  }
+
   dimension: Created_DateTB1 {
     label: "Created Date"
     type: date
     sql: cast(${TABLE}.Created_DateTB1 as timestamp) ;;
     convert_tz: no
+  }
+
+  dimension_group: fulfillment_date {
+    type: time
+    timeframes: [millisecond4]
+    # sql: ${TABLE}.Created_DateTB02 ;;
+    sql: datetime(cast(${TABLE}.Created_DateTB02 as timestamp), "America/Los_Angeles") ;;
+    convert_tz: yes
   }
 
   dimension: Created_DateTB02 {

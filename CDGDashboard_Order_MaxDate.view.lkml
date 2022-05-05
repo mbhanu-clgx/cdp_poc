@@ -101,8 +101,14 @@ view: CDGDashboard_Order_MaxDate {
   }
 
   dimension: Order_Created_Date {
-    type: date_time
-    sql: cast(${TABLE}.OrderCreationDate as timestamp) ;;
+    type: date
+    sql: ${TABLE}.OrderCreationDate ;;
+  }
+
+  dimension_group: Order_Created_Date {
+    type: time
+    timeframes: [date,millisecond4]
+    sql: datetime(${TABLE}.OrderCreationDate, "America/Los_Angeles") ;;
   }
 
   dimension: Order_Update_DT {

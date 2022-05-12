@@ -5,291 +5,291 @@ view: cdg_tax_live_detail_reports {
 
 
     sql:  select Tax_live.SLA_orderId , Source1,
-    DATE_DIFF(cast(Created_DateTB02 as timestamp),cast(SLA_Month_Date as timestamp),millisecond) as TAT_Milli_secs,
-    ( CASE WHEN DATE_DIFF(cast(Created_DateTB02 as timestamp),cast(SLA_Month_Date as timestamp),millisecond) >15000 then 'Yes' else 'No' end)  AS  Greater_15_Sec,
+          DATE_DIFF(cast(Created_DateTB02 as timestamp),cast(SLA_Month_Date as timestamp),millisecond) as TAT_Milli_secs,
+          ( CASE WHEN DATE_DIFF(cast(Created_DateTB02 as timestamp),cast(SLA_Month_Date as timestamp),millisecond) >15000 then 'Yes' else 'No' end)  AS  Greater_15_Sec,
 
-            RA1,
-            ST1,
-            MF1,
-          -- 'Count_id' as Count_Id ,
-            SLA_Month_Date,
+                  RA1,
+                  ST1,
+                  MF1,
+                -- 'Count_id' as Count_Id ,
+                  SLA_Month_Date,
 
-             SLA_LoanNumber,
-             SLA_serviceType,
-             SLA_address,
-             SLA_originationSystemName,
-             orderStatus,
-             orderUpdatedDate,
-             Line_of_Business,
-consumerPartnerId,
+                   SLA_LoanNumber,
+                   SLA_serviceType,
+                   SLA_address,
+                   SLA_originationSystemName,
+                   orderStatus,
+                   orderUpdatedDate,
+                   Line_of_Business,
+      consumerPartnerId,
 
-Source2,
-            RA2,
-ST2,
-MF2,
-Flag,
-Created_DateTB02,
-Created_DateTB1,
-TB_1,
-Max_orderUpdatedDate
-from
+      Source2,
+                  RA2,
+      ST2,
+      MF2,
+      Flag,
+      Created_DateTB02,
+      Created_DateTB1,
+      TB_1,
+      Max_orderUpdatedDate
+      from
 
-( select
+      ( select
 
-      message_table1. SLA_orderId,
-      message_table1.Source1,
-            message_table1.RA1,
-            message_table1.ST1,
-            message_table1.MF1,
-          -- 'Count_id' as Count_Id ,
-            message_table1.SLA_Month_Date,
+            message_table1. SLA_orderId,
+            message_table1.Source1,
+                  message_table1.RA1,
+                  message_table1.ST1,
+                  message_table1.MF1,
+                -- 'Count_id' as Count_Id ,
+                  message_table1.SLA_Month_Date,
 
-             SLA_LoanNumber,
-             SLA_serviceType,
-             SLA_address,
-             SLA_originationSystemName,
-             orderStatus,
-             orderUpdatedDate,
-             Line_of_Business,
-consumerPartnerId,
+                   SLA_LoanNumber,
+                   SLA_serviceType,
+                   SLA_address,
+                   SLA_originationSystemName,
+                   orderStatus,
+                   orderUpdatedDate,
+                   Line_of_Business,
+      consumerPartnerId,
 
-message_table2.Source2,
-            message_table2.RA2,
-message_table2.ST2,
-message_table2.MF2,
-message_table2.Flag,
-Created_DateTB02,
-message_table1.Created_DateTB1,
+      message_table2.Source2,
+                  message_table2.RA2,
+      message_table2.ST2,
+      message_table2.MF2,
+      message_table2.Flag,
+      Created_DateTB02,
+      message_table1.Created_DateTB1,
 
-CASE WHEN Created_DateTB02 IS NULL THEN 'T' ELSE 'F' END as TB_1
-
-
-     from
-
-         (select Distinct
-                      orderId as SLA_orderId ,
-           source as Source2,
-           requestAction as RA2,
-           serviceType as ST2,
-           messageForm as MF2,
-'Yes' as Flag,
-                       min(orderCreationDate) as Created_DateTB02
-            FROM  looker_lookup.G2OrderMessagesReporting
-
-        where (requestAction= '1999')
-         and source = 'FULFILLMENT' and messageForm = 'ORIGINAL'
-and serviceType = 'TAXSSOT'
-         Group by orderId ,
-           source ,
-           requestAction ,
-           serviceType ,
-           messageForm) as  message_table2
-           full outer join   ( select distinct
-           orderId as SLA_orderId,
-           source as Source1,
-           requestAction as RA1,
-           serviceType as ST1,
-           messageForm as MF1,
-          -- 'Count_id' as Count_Id ,
-           min(orderCreationDate)as SLA_Month_Date,
-           min(orderCreationDate) as Created_DateTB1
-          -- ,
-          -- filename() as Fname
-
-            FROM looker_lookup.G2OrderMessagesReporting
-         where  requestAction= 'Submit'
-         and source = 'CONSUMER' and messageForm = 'ORIGINAL'
-  and serviceType = 'TAXSSOT'
-         Group by orderId ,
-           source ,
-           requestAction ,
-           serviceType ,
-           messageForm ) message_table1
-           on message_table2.SLA_orderId= message_table1.SLA_orderId
-
-           INNER JOIN  ( select  distinct
-            _id as SLA_orderId,
-            loanNumber as SLA_LoanNumber,
-            serviceType as SLA_serviceType,
-            address as SLA_address,
-            originationSystemName as SLA_originationSystemName,
-orderState as orderStatus,
-orderUpdatedDate as orderUpdatedDate,
-
---num(timestamp#(orderUpdatedDate)) as TM,
-( CASE WHEN LENGTH(COALESCE(G2OrderReporting.lineOfBusiness,'0')) = 0  AND LENGTH(COALESCE(G2OrderReporting.businessLineType,'0')) = 0 AND LENGTH(COALESCE(G2OrderReporting.businessLineStructureType,'0')) = 0
-      THEN
-            (
-        CASE WHEN G2OrderReporting.serviceType = 'TAXSSOT' AND (G2OrderReporting.originationSystemName) = 'CORE'
-          THEN 'WFHM Retail'
-
-          ELSE  (
+      CASE WHEN Created_DateTB02 IS NULL THEN 'T' ELSE 'F' END as TB_1
 
 
-          CASE WHEN G2OrderReporting.serviceType = 'TAXSSOT' AND (G2OrderReporting.originationSystemName) = 'COREP'
-                  THEN 'WFHM'
-                  ELSE '' END
-          ) END
+           from
 
-          ) ELSE ( concat( COALESCE(G2OrderReporting.lineOfBusiness,''), "", COALESCE(G2OrderReporting.businessLineType,''), "", COALESCE(G2OrderReporting.businessLineStructureType,'')
+               (select Distinct
+                            orderId as SLA_orderId ,
+                 source as Source2,
+                 requestAction as RA2,
+                 serviceType as ST2,
+                 messageForm as MF2,
+      'Yes' as Flag,
+                             min(orderCreationDate) as Created_DateTB02
+                  FROM  looker_lookup.G2OrderMessagesReporting
 
-                   )  ) END
+              where (requestAction= '1999')
+               and source = 'FULFILLMENT' and messageForm = 'ORIGINAL'
+      and serviceType = 'TAXSSOT'
+               Group by orderId ,
+                 source ,
+                 requestAction ,
+                 serviceType ,
+                 messageForm) as  message_table2
+                 full outer join   ( select distinct
+                 orderId as SLA_orderId,
+                 source as Source1,
+                 requestAction as RA1,
+                 serviceType as ST1,
+                 messageForm as MF1,
+                -- 'Count_id' as Count_Id ,
+                 min(orderCreationDate)as SLA_Month_Date,
+                 min(orderCreationDate) as Created_DateTB1
+                -- ,
+                -- filename() as Fname
 
-                   ) AS Line_of_Business,
+                  FROM looker_lookup.G2OrderMessagesReporting
+               where  requestAction= 'Submit'
+               and source = 'CONSUMER' and messageForm = 'ORIGINAL'
+        and serviceType = 'TAXSSOT'
+               Group by orderId ,
+                 source ,
+                 requestAction ,
+                 serviceType ,
+                 messageForm ) message_table1
+                 on message_table2.SLA_orderId= message_table1.SLA_orderId
 
+                 INNER JOIN  ( select  distinct
+                  _id as SLA_orderId,
+                  loanNumber as SLA_LoanNumber,
+                  serviceType as SLA_serviceType,
+                  address as SLA_address,
+                  originationSystemName as SLA_originationSystemName,
+      orderState as orderStatus,
+      orderUpdatedDate as orderUpdatedDate,
 
-            consumerPartnerId as consumerPartnerId
-              FROM looker_lookup.G2OrderReporting
-                Where
-                 consumerPartnerId in('WELLSFARGO_VPS', 'ORDERPORTAL')
- and COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
-     and  COALESCE(upper(loanNumber),'NULL') not like '%TEST%'
- and  COALESCE(upper(loanNumber),'NULL') not like '%TST%'
- and  COALESCE(upper(loanNumber),'NULL') not like '%LOANID%'
-and COALESCE(address,'NULL')  not like '108 Sandburg%' and COALESCE(address,'NULL') not like '123 Main St%'
+      --num(timestamp#(orderUpdatedDate)) as TM,
+      ( CASE WHEN LENGTH(COALESCE(G2OrderReporting.lineOfBusiness,'0')) = 0  AND LENGTH(COALESCE(G2OrderReporting.businessLineType,'0')) = 0 AND LENGTH(COALESCE(G2OrderReporting.businessLineStructureType,'0')) = 0
+            THEN
+                  (
+              CASE WHEN G2OrderReporting.serviceType = 'TAXSSOT' AND (G2OrderReporting.originationSystemName) = 'CORE'
+                THEN 'WFHM Retail'
 
-and COALESCE(upper(address),'NULL') not like '123 MAIN ST%'
-and serviceType = 'TAXSSOT'
-
-
-                  )dimension_table ON
-          dimension_table.SLA_orderId = message_table1.SLA_orderId  ) Tax_live ,
-
-
-
-(
-select    SLA_orderId ,
-max ( orderUpdatedDate ) as Max_orderUpdatedDate
-
-from
-(
-select
-
-      message_table1. SLA_orderId,
-      message_table1.Source1,
-            message_table1.RA1,
-            message_table1.ST1,
-            message_table1.MF1,
-          -- 'Count_id' as Count_Id ,
-            message_table1.SLA_Month_Date,
-
-             SLA_LoanNumber,
-             SLA_serviceType,
-             SLA_address,
-             SLA_originationSystemName,
-             orderStatus,
-             orderUpdatedDate,
-             Line_of_Business,
-consumerPartnerId,
-
-message_table2.Source2,
-            message_table2.RA2,
-message_table2.ST2,
-message_table2.MF2,
-message_table2.Flag,
-Created_DateTB02,
-message_table1.Created_DateTB1,
-
-CASE WHEN Created_DateTB02 IS NULL THEN 'T' ELSE 'F' END as TB_1
+                ELSE  (
 
 
-     from
+                CASE WHEN G2OrderReporting.serviceType = 'TAXSSOT' AND (G2OrderReporting.originationSystemName) = 'COREP'
+                        THEN 'WFHM'
+                        ELSE '' END
+                ) END
 
-         (select Distinct
-                      orderId as SLA_orderId ,
-           source as Source2,
-           requestAction as RA2,
-           serviceType as ST2,
-           messageForm as MF2,
-'Yes' as Flag,
-                       min(orderCreationDate) as Created_DateTB02
-            FROM  looker_lookup.G2OrderMessagesReporting
+                ) ELSE ( concat( COALESCE(G2OrderReporting.lineOfBusiness,''), "", COALESCE(G2OrderReporting.businessLineType,''), "", COALESCE(G2OrderReporting.businessLineStructureType,'')
 
-        where (requestAction= '1999')
-         and source = 'FULFILLMENT' and messageForm = 'ORIGINAL'
-and serviceType = 'TAXSSOT'
-         Group by orderId ,
-           source ,
-           requestAction ,
-           serviceType ,
-           messageForm) as  message_table2
-           full outer join   ( select distinct
-           orderId as SLA_orderId,
-           source as Source1,
-           requestAction as RA1,
-           serviceType as ST1,
-           messageForm as MF1,
-          -- 'Count_id' as Count_Id ,
-           min(orderCreationDate)as SLA_Month_Date,
-           min(orderCreationDate) as Created_DateTB1
-          -- ,
-          -- filename() as Fname
+                         )  ) END
 
-            FROM looker_lookup.G2OrderMessagesReporting
-         where  requestAction= 'Submit'
-         and source = 'CONSUMER' and messageForm = 'ORIGINAL'
-  and serviceType = 'TAXSSOT'
-         Group by orderId ,
-           source ,
-           requestAction ,
-           serviceType ,
-           messageForm ) message_table1
-           on message_table2.SLA_orderId= message_table1.SLA_orderId
-
-           INNER JOIN  ( select  distinct
-            _id as SLA_orderId,
-            loanNumber as SLA_LoanNumber,
-            serviceType as SLA_serviceType,
-            address as SLA_address,
-            originationSystemName as SLA_originationSystemName,
-orderState as orderStatus,
-orderUpdatedDate as orderUpdatedDate,
-
---num(timestamp#(orderUpdatedDate)) as TM,
-( CASE WHEN LENGTH(COALESCE(G2OrderReporting.lineOfBusiness,'0')) = 0  AND LENGTH(COALESCE(G2OrderReporting.businessLineType,'0')) = 0 AND LENGTH(COALESCE(G2OrderReporting.businessLineStructureType,'0')) = 0
-      THEN
-            (
-        CASE WHEN G2OrderReporting.serviceType = 'TAXSSOT' AND (G2OrderReporting.originationSystemName) = 'CORE'
-          THEN 'WFHM Retail'
-
-          ELSE  (
+                         ) AS Line_of_Business,
 
 
-          CASE WHEN G2OrderReporting.serviceType = 'TAXSSOT' AND (G2OrderReporting.originationSystemName) = 'COREP'
-                  THEN 'WFHM'
-                  ELSE '' END
-          ) END
+                  consumerPartnerId as consumerPartnerId
+                    FROM looker_lookup.G2OrderReporting
+                      Where
+                       consumerPartnerId in('WELLSFARGO_VPS', 'ORDERPORTAL')
+       and COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
+           and  COALESCE(upper(loanNumber),'NULL') not like '%TEST%'
+       and  COALESCE(upper(loanNumber),'NULL') not like '%TST%'
+       and  COALESCE(upper(loanNumber),'NULL') not like '%LOANID%'
+      and COALESCE(address,'NULL')  not like '108 Sandburg%' and COALESCE(address,'NULL') not like '123 Main St%'
 
-          ) ELSE ( concat( COALESCE(G2OrderReporting.lineOfBusiness,''), "", COALESCE(G2OrderReporting.businessLineType,''), "", COALESCE(G2OrderReporting.businessLineStructureType,'')
-
-                   )  ) END
-
-                   ) AS Line_of_Business,
-
-
-            consumerPartnerId as consumerPartnerId
-              FROM looker_lookup.G2OrderReporting
-                Where
-                 consumerPartnerId in('WELLSFARGO_VPS', 'ORDERPORTAL')
- and COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
-     and  COALESCE(upper(loanNumber),'NULL') not like '%TEST%'
- and  COALESCE(upper(loanNumber),'NULL') not like '%TST%'
- and  COALESCE(upper(loanNumber),'NULL') not like '%LOANID%'
-and COALESCE(address,'NULL')  not like '108 Sandburg%' and COALESCE(address,'NULL') not like '123 Main St%'
-
-and COALESCE(upper(address),'NULL') not like '123 MAIN ST%'
-and serviceType = 'TAXSSOT'
+      and COALESCE(upper(address),'NULL') not like '123 MAIN ST%'
+      and serviceType = 'TAXSSOT'
 
 
-                  )dimension_table ON
-          dimension_table.SLA_orderId = message_table1.SLA_orderId )
-group by SLA_orderId )  Max_Temp
+                        )dimension_table ON
+                dimension_table.SLA_orderId = message_table1.SLA_orderId  ) Tax_live ,
 
-where Max_Temp.SLA_orderId = tax_live.SLA_orderId and
-Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
 
-    ;;
-    }
+
+      (
+      select    SLA_orderId ,
+      max ( orderUpdatedDate ) as Max_orderUpdatedDate
+
+      from
+      (
+      select
+
+            message_table1. SLA_orderId,
+            message_table1.Source1,
+                  message_table1.RA1,
+                  message_table1.ST1,
+                  message_table1.MF1,
+                -- 'Count_id' as Count_Id ,
+                  message_table1.SLA_Month_Date,
+
+                   SLA_LoanNumber,
+                   SLA_serviceType,
+                   SLA_address,
+                   SLA_originationSystemName,
+                   orderStatus,
+                   orderUpdatedDate,
+                   Line_of_Business,
+      consumerPartnerId,
+
+      message_table2.Source2,
+                  message_table2.RA2,
+      message_table2.ST2,
+      message_table2.MF2,
+      message_table2.Flag,
+      Created_DateTB02,
+      message_table1.Created_DateTB1,
+
+      CASE WHEN Created_DateTB02 IS NULL THEN 'T' ELSE 'F' END as TB_1
+
+
+           from
+
+               (select Distinct
+                            orderId as SLA_orderId ,
+                 source as Source2,
+                 requestAction as RA2,
+                 serviceType as ST2,
+                 messageForm as MF2,
+      'Yes' as Flag,
+                             min(orderCreationDate) as Created_DateTB02
+                  FROM  looker_lookup.G2OrderMessagesReporting
+
+              where (requestAction= '1999')
+               and source = 'FULFILLMENT' and messageForm = 'ORIGINAL'
+      and serviceType = 'TAXSSOT'
+               Group by orderId ,
+                 source ,
+                 requestAction ,
+                 serviceType ,
+                 messageForm) as  message_table2
+                 full outer join   ( select distinct
+                 orderId as SLA_orderId,
+                 source as Source1,
+                 requestAction as RA1,
+                 serviceType as ST1,
+                 messageForm as MF1,
+                -- 'Count_id' as Count_Id ,
+                 min(orderCreationDate)as SLA_Month_Date,
+                 min(orderCreationDate) as Created_DateTB1
+                -- ,
+                -- filename() as Fname
+
+                  FROM looker_lookup.G2OrderMessagesReporting
+               where  requestAction= 'Submit'
+               and source = 'CONSUMER' and messageForm = 'ORIGINAL'
+        and serviceType = 'TAXSSOT'
+               Group by orderId ,
+                 source ,
+                 requestAction ,
+                 serviceType ,
+                 messageForm ) message_table1
+                 on message_table2.SLA_orderId= message_table1.SLA_orderId
+
+                 INNER JOIN  ( select  distinct
+                  _id as SLA_orderId,
+                  loanNumber as SLA_LoanNumber,
+                  serviceType as SLA_serviceType,
+                  address as SLA_address,
+                  originationSystemName as SLA_originationSystemName,
+      orderState as orderStatus,
+      orderUpdatedDate as orderUpdatedDate,
+
+      --num(timestamp#(orderUpdatedDate)) as TM,
+      ( CASE WHEN LENGTH(COALESCE(G2OrderReporting.lineOfBusiness,'0')) = 0  AND LENGTH(COALESCE(G2OrderReporting.businessLineType,'0')) = 0 AND LENGTH(COALESCE(G2OrderReporting.businessLineStructureType,'0')) = 0
+            THEN
+                  (
+              CASE WHEN G2OrderReporting.serviceType = 'TAXSSOT' AND (G2OrderReporting.originationSystemName) = 'CORE'
+                THEN 'WFHM Retail'
+
+                ELSE  (
+
+
+                CASE WHEN G2OrderReporting.serviceType = 'TAXSSOT' AND (G2OrderReporting.originationSystemName) = 'COREP'
+                        THEN 'WFHM'
+                        ELSE '' END
+                ) END
+
+                ) ELSE ( concat( COALESCE(G2OrderReporting.lineOfBusiness,''), "", COALESCE(G2OrderReporting.businessLineType,''), "", COALESCE(G2OrderReporting.businessLineStructureType,'')
+
+                         )  ) END
+
+                         ) AS Line_of_Business,
+
+
+                  consumerPartnerId as consumerPartnerId
+                    FROM looker_lookup.G2OrderReporting
+                      Where
+                       consumerPartnerId in('WELLSFARGO_VPS', 'ORDERPORTAL')
+       and COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
+           and  COALESCE(upper(loanNumber),'NULL') not like '%TEST%'
+       and  COALESCE(upper(loanNumber),'NULL') not like '%TST%'
+       and  COALESCE(upper(loanNumber),'NULL') not like '%LOANID%'
+      and COALESCE(address,'NULL')  not like '108 Sandburg%' and COALESCE(address,'NULL') not like '123 Main St%'
+
+      and COALESCE(upper(address),'NULL') not like '123 MAIN ST%'
+      and serviceType = 'TAXSSOT'
+
+
+                        )dimension_table ON
+                dimension_table.SLA_orderId = message_table1.SLA_orderId )
+      group by SLA_orderId )  Max_Temp
+
+      where Max_Temp.SLA_orderId = tax_live.SLA_orderId and
+      Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
+
+          ;;
+  }
 
   dimension: SLA_LoanNumber {
     label: "LoanNumber"
@@ -309,35 +309,38 @@ Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
     sql: ${TABLE}.SLA_LoanNumber ;;
   }
 
-     dimension_group: created_date {
-      type: time
-      timeframes: [millisecond4]
-      # sql: ${TABLE}.Created_DateTB1 ;;
-      sql: datetime(${TABLE}.Created_DateTB1, "America/Los_Angeles") ;;
-      convert_tz: yes
-    }
-
-    dimension: Created_DateTB1 {
-    label: "Created Date"
-    type: date
-    sql: ${TABLE}.Created_DateTB1 ;;
+  dimension_group: created_date {
+    label: "Creted Date"
+    type: time
+    timeframes: [date,millisecond4]
+    # sql: ${TABLE}.Created_DateTB1 ;;
+    sql: TIMESTAMP(datetime(${TABLE}.Created_DateTB1, "America/Los_Angeles")) ;;
     convert_tz: yes
   }
 
-  dimension_group: fulfillment_date {
-    type: time
-    timeframes: [millisecond4]
-    # sql:${TABLE}.Created_DateTB02  ;;
-    sql: datetime(${TABLE}.Created_DateTB02, "America/Los_Angeles") ;;
+  dimension: Created_DateTB1 {
+    label: "Created Date"
+    type: date
+    # sql: ${TABLE}.Created_DateTB1 ;;
+    sql: TIMESTAMP(date(${TABLE}.Created_DateTB1,"America/Los_Angeles")) ;;
     convert_tz: yes
   }
 
   dimension: Created_DateTB02 {
     label: "Fulfillment Date"
-    type: date_time
+    type: date
     sql: ${TABLE}.Created_DateTB02 ;;
     convert_tz: yes
   }
+  dimension_group: fulfillment_date {
+    label: "Fulfillment Date"
+    type: time
+    timeframes: [millisecond4]
+    # sql: ${TABLE}.Created_DateTB02 ;;
+    sql: datetime(${TABLE}.Created_DateTB02, "America/Los_Angeles") ;;
+    convert_tz: yes
+  }
+
 
   dimension: orderStatus {
     label: "Order Status"
@@ -388,4 +391,4 @@ Max_Temp.Max_orderUpdatedDate = tax_live.orderUpdatedDate
 
 
 
-    }
+}

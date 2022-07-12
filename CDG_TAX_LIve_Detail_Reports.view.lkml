@@ -74,7 +74,7 @@ view: cdg_tax_live_detail_reports {
                  messageForm as MF2,
       'Yes' as Flag,
                              min(orderCreationDate) as Created_DateTB02
-                  FROM  looker_lookup.G2OrderMessagesReporting
+                  FROM  clgx_gateway_archive.G2OrderMessagesReporting
 
               where (requestAction= '1999')
                and source = 'FULFILLMENT' and messageForm = 'ORIGINAL'
@@ -96,7 +96,7 @@ view: cdg_tax_live_detail_reports {
                 -- ,
                 -- filename() as Fname
 
-                  FROM looker_lookup.G2OrderMessagesReporting
+                  FROM clgx_gateway_archive.G2OrderMessagesReporting
                where  requestAction= 'Submit'
                and source = 'CONSUMER' and messageForm = 'ORIGINAL'
         and serviceType = 'TAXSSOT'
@@ -139,7 +139,7 @@ view: cdg_tax_live_detail_reports {
 
 
                   consumerPartnerId as consumerPartnerId
-                    FROM looker_lookup.G2OrderReporting
+                    FROM clgx_gateway_archive.G2OrderReporting
                       Where
                        consumerPartnerId in('WELLSFARGO_VPS', 'ORDERPORTAL')
        and COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
@@ -203,7 +203,7 @@ view: cdg_tax_live_detail_reports {
                  messageForm as MF2,
       'Yes' as Flag,
                              min(orderCreationDate) as Created_DateTB02
-                  FROM  looker_lookup.G2OrderMessagesReporting
+                  FROM  clgx_gateway_archive.G2OrderMessagesReporting
 
               where (requestAction= '1999')
                and source = 'FULFILLMENT' and messageForm = 'ORIGINAL'
@@ -225,7 +225,7 @@ view: cdg_tax_live_detail_reports {
                 -- ,
                 -- filename() as Fname
 
-                  FROM looker_lookup.G2OrderMessagesReporting
+                  FROM clgx_gateway_archive.G2OrderMessagesReporting
                where  requestAction= 'Submit'
                and source = 'CONSUMER' and messageForm = 'ORIGINAL'
         and serviceType = 'TAXSSOT'
@@ -268,7 +268,7 @@ view: cdg_tax_live_detail_reports {
 
 
                   consumerPartnerId as consumerPartnerId
-                    FROM looker_lookup.G2OrderReporting
+                    FROM clgx_gateway_archive.G2OrderReporting
                       Where
                        consumerPartnerId in('WELLSFARGO_VPS', 'ORDERPORTAL')
        and COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
@@ -313,32 +313,32 @@ view: cdg_tax_live_detail_reports {
     label: "Creted Date"
     type: time
     timeframes: [date,millisecond4]
-    # sql: ${TABLE}.Created_DateTB1 ;;
-    sql: TIMESTAMP(datetime(${TABLE}.Created_DateTB1, "America/Los_Angeles")) ;;
-    convert_tz: yes
+    sql: ${TABLE}.Created_DateTB1 ;;
+    # sql: TIMESTAMP(datetime(${TABLE}.Created_DateTB1, "America/Los_Angeles")) ;;
+    # convert_tz: yes
   }
 
   dimension: Created_DateTB1 {
     label: "Created Date"
     type: date
-    # sql: ${TABLE}.Created_DateTB1 ;;
-    sql: TIMESTAMP(date(${TABLE}.Created_DateTB1,"America/Los_Angeles")) ;;
-    convert_tz: yes
+    sql: ${TABLE}.Created_DateTB1 ;;
+    # sql: TIMESTAMP(date(${TABLE}.Created_DateTB1,"America/Los_Angeles")) ;;
+    # convert_tz: yes
   }
 
   dimension: Created_DateTB02 {
     label: "Fulfillment Date"
     type: date
     sql: ${TABLE}.Created_DateTB02 ;;
-    convert_tz: yes
+    # convert_tz: yes
   }
   dimension_group: fulfillment_date {
     label: "Fulfillment Date"
     type: time
     timeframes: [millisecond4]
-    # sql: ${TABLE}.Created_DateTB02 ;;
-    sql: datetime(${TABLE}.Created_DateTB02, "America/Los_Angeles") ;;
-    convert_tz: yes
+    sql: ${TABLE}.Created_DateTB02 ;;
+    # sql: datetime(${TABLE}.Created_DateTB02, "America/Los_Angeles") ;;
+    # convert_tz: yes
   }
 
 

@@ -2,166 +2,162 @@ view: CDGDashboard_Dimension_Table {
   derived_table: {
     sql:
 
-Select
-A.Order_Key as Order_Key,
-A.orderId as OrderId,
-A.loanNumber as LoanNumber,
+    Select
+    A.Order_Key as Order_Key,
+    A.orderId as OrderId,
+    A.loanNumber as LoanNumber,
 
-A.fulfillmentServiceAlias as FulfillmentServiceAlias,
-A.originationSystemName  as OriginationSystemName,
-A.serviceType_Exist as serviceType_Exist,
-A.preFloodClient as preFloodClient,
-A.consumerPartnerId_Exist as consumerPartnerId_Exist,
-A.ggLenderIdentifier_Exist as ggLenderIdentifier_Exist,
-A.serviceType as serviceType,
-A.ggLenderIdentifier as ggLenderIdentifier,
-A.consumerPartnerId as consumerPartnerId,
+    A.fulfillmentServiceAlias as FulfillmentServiceAlias,
+    A.originationSystemName  as OriginationSystemName,
+    A.serviceType_Exist as serviceType_Exist,
+    A.preFloodClient as preFloodClient,
+    A.consumerPartnerId_Exist as consumerPartnerId_Exist,
+    A.ggLenderIdentifier_Exist as ggLenderIdentifier_Exist,
+    A.serviceType as serviceType,
+    A.ggLenderIdentifier as ggLenderIdentifier,
+    A.consumerPartnerId as consumerPartnerId,
 
+    case when A.ggLenderIdentifier = CDG_Clients_v4.ggLenderIdentifier then CDG_Clients_v4.Client
+    ELSE A.ggLenderIdentifier END AS End_Client,
 
+    case when A.ggLenderIdentifier = Consumer_Partner_Mapping.ggLenderIdentifier then Consumer_Partner_Mapping.Consumer_partner ELSE
+    A.consumerPartnerId END AS End_Client_Consumer_partner,
 
+    CDG_Clients_v4.ggLenderIdentifier as CDG_Clients_v4_ggLenderIdentifier ,
+    A.ggLenderIdentifier as A_ggLenderIdentifier,
+    Consumer_Partner_Mapping.ggLenderIdentifier as Consumer_Partner_Mapping_ggLenderIdentifier
 
+    from
 
-case when A.ggLenderIdentifier = CDG_Clients_v4.ggLenderIdentifier then CDG_Clients_v4.Client
-ELSE A.ggLenderIdentifier END AS End_Client,
+    (
+    select
+    row_number() OVER(ORDER BY _id) as Order_Key,
+    -- row_number(_id) as Order_Key,
+    _id as orderId,
+    loanNumber,
 
-case when A.ggLenderIdentifier = Consumer_Partner_Mapping.ggLenderIdentifier then Consumer_Partner_Mapping.Consumer_partner ELSE
-A.consumerPartnerId END AS End_Client_Consumer_partner,
+    fulfillmentServiceAlias,
+    originationSystemName ,
+    _id,
+    serviceType as serviceType_Exist,
+    preFloodClient,
+    G2OrderReporting.consumerPartnerId as consumerPartnerId_Exist,
+    G2OrderReporting.ggLenderIdentifier as ggLenderIdentifier_Exist,
 
-CDG_Clients_v4.ggLenderIdentifier as CDG_Clients_v4_ggLenderIdentifier ,
-A.ggLenderIdentifier as A_ggLenderIdentifier,
-Consumer_Partner_Mapping.ggLenderIdentifier as Consumer_Partner_Mapping_ggLenderIdentifier
+    ( CASE WHEN fulfillmentServiceAlias IN ( 'VOI_BPV_FANNIEMAE','VOI_V2_BPV_FANNIEMAE') THEN '4506-T_Reissue'  ELSE
 
-from
+       ( CASE WHEN serviceType = 'VOI' THEN '4506-T' ELSE  ( CASE WHEN serviceType = 'TAXSSOT' THEN 'TAXPTE' ELSE ( CASE WHEN preFloodClient = 'Y'
+     THEN 'PTEPLUSFLOOD' ELSE ( CASE WHEN serviceType IN ( 'LSFM' , 'LSFMCDE' ) THEN  'LSFM'  ELSE serviceType END)
+      END )  END       ) END ) END )   AS serviceType,
 
-(
-select
-row_number() OVER(ORDER BY _id) as Order_Key,
--- row_number(_id) as Order_Key,
-_id as orderId,
-loanNumber,
+    ( CASE WHEN fulfillmentServiceAlias IN ( 'VOI_BPV_FANNIEMAE','VOI_V2_BPV_FANNIEMAE') THEN 'FANNIEMAE'  ELSE
 
-fulfillmentServiceAlias,
-originationSystemName ,
-_id,
-serviceType as serviceType_Exist,
-preFloodClient,
-G2OrderReporting.consumerPartnerId as consumerPartnerId_Exist,
-G2OrderReporting.ggLenderIdentifier as ggLenderIdentifier_Exist,
 
-( CASE WHEN fulfillmentServiceAlias IN ( 'VOI_BPV_FANNIEMAE','VOI_V2_BPV_FANNIEMAE') THEN '4506-T_Reissue'  ELSE
+    ( CASE WHEN G2OrderReporting.consumerPartnerId = 'WELLSFARGO_VPS'  THEN 'WELLSFARGO'  ELSE (
 
-   ( CASE WHEN serviceType = 'VOI' THEN '4506-T' ELSE  ( CASE WHEN serviceType = 'TAXSSOT' THEN 'TAXPTE' ELSE ( CASE WHEN preFloodClient = 'Y'
- THEN 'PTEPLUSFLOOD' ELSE ( CASE WHEN serviceType IN ( 'LSFM' , 'LSFMCDE' ) THEN  'LSFM'  ELSE serviceType END)
-  END )  END       ) END ) END )   AS serviceType,
+    ( CASE WHEN G2OrderReporting.consumerPartnerId = 'ORDERPORTAL'  THEN 'WELLSFARGO'  ELSE (
 
-( CASE WHEN fulfillmentServiceAlias IN ( 'VOI_BPV_FANNIEMAE','VOI_V2_BPV_FANNIEMAE') THEN 'FANNIEMAE'  ELSE
 
+    ( CASE WHEN G2OrderReporting.consumerPartnerId = 'NETWORKCAPITAL' THEN 'Network Capital Funding'  ELSE (
 
-( CASE WHEN G2OrderReporting.consumerPartnerId = 'WELLSFARGO_VPS'  THEN 'WELLSFARGO'  ELSE (
 
-( CASE WHEN G2OrderReporting.consumerPartnerId = 'ORDERPORTAL'  THEN 'WELLSFARGO'  ELSE (
+    ( CASE WHEN G2OrderReporting.consumerPartnerId = 'VETERANS_UNITED' THEN 'Veterans United'  ELSE (
 
+    ( CASE WHEN G2OrderReporting.consumerPartnerId = 'BYTE' THEN 'BYTE'  ELSE (
 
-( CASE WHEN G2OrderReporting.consumerPartnerId = 'NETWORKCAPITAL' THEN 'Network Capital Funding'  ELSE (
+    ( CASE WHEN G2OrderReporting.consumerPartnerId IN ( 'FREDDIE','FREDDIEMAC' )  THEN 'FREDDIE MAC'  ELSE (
 
+    ( CASE WHEN G2OrderReporting.consumerPartnerId = 'EAGLEHOMEMORTGAGE'  THEN 'LENNAR MORTGAGE'  ELSE (
 
-( CASE WHEN G2OrderReporting.consumerPartnerId = 'VETERANS_UNITED' THEN 'Veterans United'  ELSE (
+    ( CASE WHEN G2OrderReporting.consumerPartnerId = 'WORKFLOW'  THEN 'EQUIFAX_TWN'  ELSE (
 
-( CASE WHEN G2OrderReporting.consumerPartnerId = 'BYTE' THEN 'BYTE'  ELSE (
+    ( CASE WHEN  ( serviceType = 'CHASETITLE' and G2OrderReporting.consumerPartnerId = 'FNC_CMS' and fulfillmentServiceAlias ='CHASETITLE_FNC_PULL')
+    THEN 'GG000471'  ELSE (
+    ( CASE WHEN  LENGTH(COALESCE(G2OrderReporting.ggLenderIdentifier,'0')) <=1 THEN G2OrderReporting.consumerPartnerId  ELSE G2OrderReporting.ggLenderIdentifier END )
 
-( CASE WHEN G2OrderReporting.consumerPartnerId IN ( 'FREDDIE','FREDDIEMAC' )  THEN 'FREDDIE MAC'  ELSE (
+    ) END )
 
-( CASE WHEN G2OrderReporting.consumerPartnerId = 'EAGLEHOMEMORTGAGE'  THEN 'LENNAR MORTGAGE'  ELSE (
+    ) END )
 
-( CASE WHEN G2OrderReporting.consumerPartnerId = 'WORKFLOW'  THEN 'EQUIFAX_TWN'  ELSE (
 
-( CASE WHEN  ( serviceType = 'CHASETITLE' and G2OrderReporting.consumerPartnerId = 'FNC_CMS' and fulfillmentServiceAlias ='CHASETITLE_FNC_PULL')
-THEN 'GG000471'  ELSE (
-( CASE WHEN  LENGTH(COALESCE(G2OrderReporting.ggLenderIdentifier,'0')) <=1 THEN G2OrderReporting.consumerPartnerId  ELSE G2OrderReporting.ggLenderIdentifier END )
+    ) END )
 
-) END )
 
-) END )
+    ) END )
 
 
-) END )
+    ) END )
 
 
-) END )
 
+    ) END )
 
-) END )
+    ) END )
 
 
+    ) END )
 
-) END )
+    ) END ) END ) AS ggLenderIdentifier
 
-) END )
+    ,
 
 
-) END )
 
-) END ) END ) AS ggLenderIdentifier
 
-,
+    ( CASE WHEN G2OrderReporting.consumerPartnerId = 'CORELOGICTAXUI' THEN 'PORTAL'  ELSE (
 
+    CASE WHEN G2OrderReporting.consumerPartnerId IN ( 'FANNIEMAE','FANNIEMAEV2')  THEN 'FANNIEMAE'  ELSE (
 
+    CASE WHEN G2OrderReporting.consumerPartnerId IN ( 'FREDDIE','FREDDIEMAC')  THEN 'FREDDIE MAC'  ELSE (
 
+    CASE WHEN G2OrderReporting.consumerPartnerId = 'EAGLEHOMEMORTGAGE'  THEN 'LENNAR MORTGAGE'  ELSE (
 
-( CASE WHEN G2OrderReporting.consumerPartnerId = 'CORELOGICTAXUI' THEN 'PORTAL'  ELSE (
+    CASE WHEN G2OrderReporting.consumerPartnerId = 'WORKFLOW'  THEN 'EQUIFAX_TWN'  ELSE (G2OrderReporting.consumerPartnerId) END
 
-CASE WHEN G2OrderReporting.consumerPartnerId IN ( 'FANNIEMAE','FANNIEMAEV2')  THEN 'FANNIEMAE'  ELSE (
+    ) END
 
-CASE WHEN G2OrderReporting.consumerPartnerId IN ( 'FREDDIE','FREDDIEMAC')  THEN 'FREDDIE MAC'  ELSE (
+    ) END
 
-CASE WHEN G2OrderReporting.consumerPartnerId = 'EAGLEHOMEMORTGAGE'  THEN 'LENNAR MORTGAGE'  ELSE (
+    ) END
 
-CASE WHEN G2OrderReporting.consumerPartnerId = 'WORKFLOW'  THEN 'EQUIFAX_TWN'  ELSE (G2OrderReporting.consumerPartnerId) END
 
-) END
+    ) END ) as consumerPartnerId
 
-) END
 
-) END
 
 
-) END ) as consumerPartnerId
+    FROM G2OrderReporting
 
 
+    WHERE
 
+     COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
+    and  COALESCE(upper(loanNumber),'NULL') not like '%TEST%'
 
-FROM looker_lookup.G2OrderReporting
+    and  COALESCE(loanNumber,'NULL') not like '%TEST%' and COALESCE(loanNumber,'NULL') not like '%TST%' and COALESCE(loanNumber,'NULL') not like '%LOANID%'
+    and COALESCE(loanNumber,'NULL') not like '%12083-%' and COALESCE(loanNumber,'NULL') not like '%12082-%' and COALESCE(loanNumber,'NULL') not like '%12080-%' and
+    COALESCE(loanNumber,'NULL') not like '%12081-%' and COALESCE(loanNumber,'NULL') not like '%12096-%' and COALESCE(loanNumber,'NULL') not like '%T2L%'
 
+    and COALESCE(address,'NULL')  not like '108 Sandburg%' and COALESCE(address,'NULL') not like '123 Main St%'
 
-WHERE
+    and COALESCE(upper(address),'NULL') not like '123 MAIN ST%'
 
- COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
-and  COALESCE(upper(loanNumber),'NULL') not like '%TEST%'
+    and COALESCE(upper(serviceType),'NULL')  not like '%FLOODAUTOHIT%'
 
-and  COALESCE(loanNumber,'NULL') not like '%TEST%' and COALESCE(loanNumber,'NULL') not like '%TST%' and COALESCE(loanNumber,'NULL') not like '%LOANID%'
-and COALESCE(loanNumber,'NULL') not like '%12083-%' and COALESCE(loanNumber,'NULL') not like '%12082-%' and COALESCE(loanNumber,'NULL') not like '%12080-%' and
-COALESCE(loanNumber,'NULL') not like '%12081-%' and COALESCE(loanNumber,'NULL') not like '%12096-%' and COALESCE(loanNumber,'NULL') not like '%T2L%'
+    and COALESCE(G2OrderReporting.ggLenderIdentifier,'NULL') not like '%12083%' and COALESCE(G2OrderReporting.ggLenderIdentifier,'NULL') not like '%12082%'  and
+     COALESCE(G2OrderReporting.ggLenderIdentifier,'NULL')   not like '%12081%'
 
-and COALESCE(address,'NULL')  not like '108 Sandburg%' and COALESCE(address,'NULL') not like '123 Main St%'
+    and COALESCE(G2OrderReporting.consumerPartnerId,'NULL') not like  '%LOSJSON%' and COALESCE(G2OrderReporting.consumerPartnerId,'NULL') not like '%LOSJSON_PUSH%'
+    and COALESCE(G2OrderReporting.consumerPartnerId,'NULL') not like '%LOSM34%' ) A
 
-and COALESCE(upper(address),'NULL') not like '123 MAIN ST%'
+    left join
+    CDG_Clients_v4 on A.ggLenderIdentifier = CDG_Clients_v4.ggLenderIdentifier
 
-and COALESCE(upper(serviceType),'NULL')  not like '%FLOODAUTOHIT%'
 
-and COALESCE(G2OrderReporting.ggLenderIdentifier,'NULL') not like '%12083%' and COALESCE(G2OrderReporting.ggLenderIdentifier,'NULL') not like '%12082%'  and
- COALESCE(G2OrderReporting.ggLenderIdentifier,'NULL')   not like '%12081%'
+    left join
+    Consumer_Partner_Mapping on A.ggLenderIdentifier = Consumer_Partner_Mapping.ggLenderIdentifier
 
-and COALESCE(G2OrderReporting.consumerPartnerId,'NULL') not like  '%LOSJSON%' and COALESCE(G2OrderReporting.consumerPartnerId,'NULL') not like '%LOSJSON_PUSH%'
-and COALESCE(G2OrderReporting.consumerPartnerId,'NULL') not like '%LOSM34%' ) A
-
-left join
-CDG_Clients_v4 on A.ggLenderIdentifier = CDG_Clients_v4.ggLenderIdentifier
-
-
-left join
-Consumer_Partner_Mapping on A.ggLenderIdentifier = Consumer_Partner_Mapping.ggLenderIdentifier
-
-;;
+    ;;
   }
 
   dimension: serviceType {
@@ -231,6 +227,11 @@ Consumer_Partner_Mapping on A.ggLenderIdentifier = Consumer_Partner_Mapping.ggLe
   dimension: Original_ggLenderIdentifier {
     type: string
     sql: ${TABLE}.ggLenderIdentifier_Exist ;;
+  }
+
+  measure: Order_Total {
+    type: count_distinct
+    sql: ${TABLE}.orderId;;
   }
 
 

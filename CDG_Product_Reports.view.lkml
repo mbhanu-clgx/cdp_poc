@@ -139,7 +139,7 @@ orderCreationDate as Month_Date,
 orderUpdatedDate as Updated_Date,
 consumerPartnerId
 ,
-FROM looker_lookup.G2OrderReporting
+FROM clgx_gateway_archive.G2OrderReporting
 
 WHERE
 
@@ -286,7 +286,7 @@ orderCreationDate as Month_Date,
 orderUpdatedDate as Updated_Date,
 consumerPartnerId
 ,
-FROM looker_lookup.G2OrderReporting
+FROM clgx_gateway_archive.G2OrderReporting
 
 WHERE
 
@@ -338,47 +338,47 @@ Month_Date
  ;; }
 
 
-    dimension: Product_Integration {
+      dimension: Product_Integration {
 
-      type: string
-      sql: ${TABLE}.Product_Integration ;;
+        type: string
+        sql: ${TABLE}.Product_Integration ;;
+      }
+
+      dimension: Client {
+
+        type: string
+        sql: ${TABLE}.Client ;;
+      }
+
+      dimension: End_Client {
+        type: string
+        sql: ${TABLE}.End_Client ;;
+      }
+
+      measure: Total_Count {
+        type: number
+        sql: SUM(${TABLE}.Total_Count);;
+      }
+
+
+      dimension: Month_Date {
+        label: "Month Date"
+        sql: ${TABLE}.Month_Date ;;
+        description: "used as filter for Date"
+      }
+
+      dimension: Order_Month {
+        label: "Order_Month"
+        sql: ${TABLE}.Order_Month ;;
+        description: "used as filter for Month"
+      }
+
+
+      dimension_group: Month_Date {
+        label: "Month Dimension"
+        type: time
+        sql: ${TABLE}.Month_Date ;;
+      }
+
+
     }
-
-    dimension: Client {
-
-      type: string
-      sql: ${TABLE}.Client ;;
-    }
-
-    dimension: End_Client {
-      type: string
-      sql: ${TABLE}.End_Client ;;
-    }
-
-  measure: Total_Count {
-    type: number
-    sql: SUM(${TABLE}.Total_Count);;
-  }
-
-
-  dimension: Month_Date {
-    label: "Month Date"
-    sql: ${TABLE}.Month_Date ;;
-    description: "used as filter for Date"
-  }
-
-  dimension: Order_Month {
-    label: "Order_Month"
-    sql: ${TABLE}.Order_Month ;;
-    description: "used as filter for Month"
-  }
-
-
-  dimension_group: Month_Date {
-    label: "Month Dimension"
-    type: time
-    sql: ${TABLE}.Month_Date ;;
-  }
-
-
-}

@@ -8,7 +8,7 @@ view: CDGDashboard_Order_MaxDate {
           consumerPartnerId as CPID2,
     Max(orderUpdatedDate) as Order_Upd_DT
 
-    FROM looker_lookup.G2OrderReporting
+    FROM G2OrderReporting
 
     Where  COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
     and  COALESCE(upper(loanNumber),'NULL') not like '%TEST%' and COALESCE(loanNumber,'NULL') not like '%TST%' and COALESCE(loanNumber,'NULL') not like '%LOANID%'
@@ -43,7 +43,7 @@ view: CDGDashboard_Order_MaxDate {
 
      --,row_number() OVER(ORDER BY ( max(orderUpdatedDate) '-' _id )) as OU_Key
 
-    FROM looker_lookup.G2OrderReporting
+    FROM G2OrderReporting
 
     Where
     COALESCE(originationSystemName,'NULL') != 'myLoanOriginationSystemName'
@@ -93,27 +93,51 @@ view: CDGDashboard_Order_MaxDate {
   dimension: order_Id {
     type: string
     sql: ${TABLE}.order_Id ;;
+    primary_key: yes
   }
 
   dimension_group: Month_Date {
     type: time
-    sql: cast(${TABLE}.Month_Date as timestamp) ;;
+    sql:${TABLE}.Month_Date  ;;
+    # sql: TIMESTAMP(date(cast(${TABLE}.Month_Date as timestamp),"America/Los_Angeles")) ;;
   }
 
   dimension: Order_Created_Date {
     type: date
-    sql: ${TABLE}.OrderCreationDate ;;
+    sql:${TABLE}.OrderCreationDate  ;;
+    # sql: TIMESTAMP(date(cast(${TABLE}.OrderCreationDate as timestamp),"America/Los_Angeles")) ;;
+    # convert_tz: yes
   }
 
   dimension_group: Order_Created_Date {
     type: time
-    timeframes: [date,millisecond4]
-    sql: datetime(${TABLE}.OrderCreationDate, "America/Los_Angeles") ;;
+    timeframes: [date,month,month_name,quarter,year,millisecond4]
+    sql: ${TABLE}.OrderCreationDate;;
+    # sql: TIMESTAMP(datetime(cast(${TABLE}.OrderCreationDate as timestamp), "America/Los_Angeles")) ;;
+    # convert_tz: yes
   }
+
+  dimension: year_month {
+    type: string
+    sql: FORMAT_DATETIME("%Y-%m",${Order_Created_Date}) ;;
+    order_by_field: Order_Created_Date_month
+  }
+
+  dimension: year_month_count {
+    type: string
+    hidden: yes
+    sql: FORMAT_DATETIME("%Y-%m",${Order_Created_Date}) ;;
+  }
+
+  # FORMAT_DATETIME("%B, %Y", DATETIME "2018-05-09 15:30:00")
 
   dimension: Order_Update_DT {
     type: date
     sql: ${TABLE}.Order_Update_DT ;;
+  }
+
+  measure: count {
+    type: count
   }
 
   measure: Order_Total {
@@ -123,7 +147,7 @@ view: CDGDashboard_Order_MaxDate {
 
   measure: Month_Date_Count {
     type: number
-    sql: COUNT(${TABLE}.Month_Date) ;;
+    sql: count(${year_month}) ;;
   }
 
   dimension: CDG_Details {
@@ -143,13 +167,13 @@ view: CDGDashboard_Order_MaxDate {
   dimension: CDG_Summary_link {
     type: string
     sql: "CDG_Summary" ;;
-    html: <a href="./2333"><u><font size=5>CDG Summary</font></u></a> ;;
+    html: <a href="./15"><u><font size=5>CDG Summary</font></u></a> ;;
   }
 
   dimension: CDG_Details_link {
     type: string
     sql: "CDG_Details" ;;
-    html: <a href="./2331"><u><font size=5>CDG Details</font></u></a> ;;
+    html: <a href="./14"><u><font size=5>CDG Details</font></u></a> ;;
   }
 
 }
